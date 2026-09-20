@@ -8,6 +8,8 @@ namespace HrcTech.Infrastructure.Persistence;
 public class AppDbContext(DbContextOptions<AppDbContext> options)
     : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>(options)
 {
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -16,6 +18,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         {
             b.Property(u => u.Name).IsRequired().HasMaxLength(100);
             b.Property(u => u.CreatedAt).IsRequired();
+        });
+
+        builder.Entity<RefreshToken>(b =>
+        {
+            b.HasKey(t => t.Id);
+            b.Property(t => t.TokenHash).IsRequired().HasMaxLength(64);
+            b.HasIndex(t => t.TokenHash).IsUnique();
+            b.HasIndex(t => t.UserId);
+            b.HasOne<ApplicationUser>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
         });
 
         // Roles are seeded with fixed IDs. No API can create or edit roles.

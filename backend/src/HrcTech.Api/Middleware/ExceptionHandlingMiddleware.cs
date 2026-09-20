@@ -1,3 +1,5 @@
+using HrcTech.Application.Exceptions;
+
 namespace HrcTech.Api.Middleware;
 
 public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
@@ -11,6 +13,12 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
         catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
         {
             // Client disconnected. Nothing to return.
+        }
+        catch (AppException ex) when (!context.Response.HasStarted)
+        {
+            // Expected business errors (400, 401, 403, 404, 409, 429). Headers such as Set-Cookie are kept.
+            context.Response.StatusCode = ex.StatusCode;
+            await context.Response.WriteAsJsonAsync(new { message = ex.Message });
         }
         catch (Exception ex)
         {

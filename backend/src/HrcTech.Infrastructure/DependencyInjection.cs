@@ -1,5 +1,7 @@
 using HrcTech.Application.Interfaces;
+using HrcTech.Application.Settings;
 using HrcTech.Domain.Entities;
+using HrcTech.Infrastructure.Auth;
 using HrcTech.Infrastructure.Persistence;
 using HrcTech.Infrastructure.Persistence.Seed;
 using HrcTech.Infrastructure.Security;
@@ -34,7 +36,10 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<AppDbContext>();
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.SectionName));
+
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<AdminSeeder>();
 
         return services;
