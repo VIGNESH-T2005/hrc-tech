@@ -10,4 +10,8 @@ public sealed class UnauthorizedException(string message) : AppException(message
 public sealed class ForbiddenException(string message) : AppException(message, 403);
 public sealed class NotFoundException(string message) : AppException(message, 404);
 public sealed class ConflictException(string message) : AppException(message, 409);
+public sealed class PayloadTooLargeException(string message) : AppException(message, 413);
 public sealed class TooManyRequestsException(string message) : AppException(message, 429);
+
+// Thrown by media processing. The message is written for the admin and is safe to show.
+public sealed class ProcessingException(string message) : Exception(message);
