@@ -9,6 +9,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>(options)
 {
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Course> Courses => Set<Course>();
+    public DbSet<Lesson> Lessons => Set<Lesson>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -27,6 +29,33 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             b.HasIndex(t => t.TokenHash).IsUnique();
             b.HasIndex(t => t.UserId);
             b.HasOne<ApplicationUser>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Course>(b =>
+        {
+            b.HasKey(c => c.Id);
+            b.Property(c => c.Title).IsRequired().HasMaxLength(200);
+            b.Property(c => c.Description).IsRequired().HasMaxLength(4000);
+            b.Property(c => c.Category).IsRequired().HasMaxLength(100);
+            b.Property(c => c.Price).HasPrecision(12, 2);
+            b.Property(c => c.ThumbnailRef).HasMaxLength(500);
+            b.HasIndex(c => new { c.IsPublished, c.Category });
+            b.ToTable(t => t.HasCheckConstraint("CK_Courses_Price_Positive", "\"Price\" > 0"));
+
+            // Never delete the admin user by accident through a course.
+            b.HasOne<ApplicationUser>().WithMany().HasForeignKey(c => c.CreatedByAdminId).OnDelete(DeleteBehavior.Restrict);
+
+            // Deleting a course removes its lessons.
+            b.HasMany(c => c.Lessons).WithOne(l => l.Course).HasForeignKey(l => l.CourseId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Lesson>(b =>
+        {
+            b.HasKey(l => l.Id);
+            b.Property(l => l.Title).IsRequired().HasMaxLength(200);
+            b.Property(l => l.Description).HasMaxLength(2000);
+            b.Property(l => l.ContentType).HasConversion<string>().HasMaxLength(20);
+            b.HasIndex(l => new { l.CourseId, l.LessonOrder }).IsUnique();
         });
 
         // Roles are seeded with fixed IDs. No API can create or edit roles.
