@@ -8,7 +8,7 @@ using HrcTech.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using HrcTech.Infrastructure.Courses;
 namespace HrcTech.Infrastructure;
 
 public static class DependencyInjection
@@ -40,6 +40,9 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICourseCatalogService, CourseCatalogService>();
+        services.AddScoped<IAdminCourseService, AdminCourseService>();
+
         services.AddScoped<AdminSeeder>();
 
         return services;
