@@ -1,4 +1,5 @@
 using HrcTech.Application.DTOs.Courses;
+using HrcTech.Application.Uploads;
 
 namespace HrcTech.Application.Interfaces;
 
@@ -10,4 +11,5 @@ public interface IAdminCourseService
     Task<AdminCourseDto> UpdateAsync(Guid id, CourseUpsertRequest request, CancellationToken ct);
     Task DeleteAsync(Guid id, CancellationToken ct);
     Task<AdminCourseDto> SetPublishedAsync(Guid id, bool published, CancellationToken ct);
+    Task<AdminCourseDto> SetThumbnailAsync(Guid id, UploadedFile file, CancellationToken ct);
 }

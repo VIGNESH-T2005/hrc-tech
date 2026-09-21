@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using HrcTech.Api.Extensions;
 using HrcTech.Api.Middleware;
 using HrcTech.Infrastructure;
@@ -14,6 +15,7 @@ builder.Services.AddAuthorizationPolicies();
 builder.Services.AddAuthRateLimiting(builder.Configuration);
 
 builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
     .ConfigureApiBehaviorOptions(options =>
     {
         // Validation failures use the same { "message": ... } shape as every other error.
@@ -49,6 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Note: there is deliberately NO app.UseStaticFiles(). Uploaded files are never served directly.
 app.UseCors();
 app.UseRateLimiter();
 app.UseAuthentication();

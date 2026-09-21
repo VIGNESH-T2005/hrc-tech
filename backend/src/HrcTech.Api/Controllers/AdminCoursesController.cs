@@ -1,6 +1,8 @@
 using HrcTech.Api.Extensions;
 using HrcTech.Application.DTOs.Courses;
+using HrcTech.Application.Exceptions;
 using HrcTech.Application.Interfaces;
+using HrcTech.Application.Uploads;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,4 +47,18 @@ public class AdminCoursesController(IAdminCourseService courses) : ControllerBas
     [HttpPost("{id:guid}/unpublish")]
     public async Task<IActionResult> Unpublish(Guid id, CancellationToken ct) =>
         Ok(await courses.SetPublishedAsync(id, false, ct));
+
+    [HttpPost("{id:guid}/thumbnail")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(UploadLimits.MaxThumbnailRequestBytes)]
+    public async Task<IActionResult> UploadThumbnail(Guid id, IFormFile? file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            throw new BadRequestException("Choose an image to upload.");
+
+        await using var stream = file.OpenReadStream();
+        var uploaded = new UploadedFile(stream, file.FileName, file.ContentType, file.Length);
+
+        return Ok(await courses.SetThumbnailAsync(id, uploaded, ct));
+    }
 }

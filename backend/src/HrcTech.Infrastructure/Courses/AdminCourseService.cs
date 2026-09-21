@@ -2,14 +2,16 @@ using System.Linq.Expressions;
 using HrcTech.Application.DTOs.Courses;
 using HrcTech.Application.Exceptions;
 using HrcTech.Application.Interfaces;
+using HrcTech.Application.Uploads;
 using HrcTech.Domain.Constants;
 using HrcTech.Domain.Entities;
+using HrcTech.Domain.Enums;
 using HrcTech.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace HrcTech.Infrastructure.Courses;
 
-public sealed class AdminCourseService(AppDbContext db) : IAdminCourseService
+public sealed class AdminCourseService(AppDbContext db, IFileStorage storage) : IAdminCourseService
 {
     private sealed record Row(
         Guid Id, string Title, string Description, string Category, decimal Price,
@@ -79,8 +81,7 @@ public sealed class AdminCourseService(AppDbContext db) : IAdminCourseService
 
         await db.SaveChangesAsync(ct);
 
-        var lessonCount = await db.Lessons.CountAsync(l => l.CourseId == id, ct);
-        return ToDto(course, lessonCount);
+        return ToDto(course, await CountLessonsAsync(id, ct));
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken ct)
@@ -91,9 +92,22 @@ public sealed class AdminCourseService(AppDbContext db) : IAdminCourseService
         if (course.IsPublished)
             throw new ConflictException("Unpublish this course before deleting it.");
 
-        // Lessons are removed by the database (cascade).
+        if (await db.Lessons.AnyAsync(l => l.CourseId == id && l.ProcessingStatus == ProcessingStatus.Processing, ct))
+            throw new ConflictException("A lesson in this course is being processed. Wait for it to finish, then delete the course.");
+
+        var lessonIds = await db.Lessons.Where(l => l.CourseId == id).Select(l => l.Id).ToListAsync(ct);
+
+        // Lessons are removed by the database (cascade). Their files are removed right after.
         db.Courses.Remove(course);
         await db.SaveChangesAsync(ct);
+
+        foreach (var lessonId in lessonIds)
+        {
+            storage.DeleteDirectory($"raw/{lessonId}");
+            storage.DeleteDirectory($"processed/{lessonId}");
+        }
+
+        storage.DeleteDirectory($"thumbnails/{id}");
     }
 
     public async Task<AdminCourseDto> SetPublishedAsync(Guid id, bool published, CancellationToken ct)
@@ -104,14 +118,65 @@ public sealed class AdminCourseService(AppDbContext db) : IAdminCourseService
         // Idempotent: repeating the same action changes nothing.
         if (course.IsPublished != published)
         {
+            if (published) await EnsureReadyToPublishAsync(id, ct);
+
             course.IsPublished = published;
             course.UpdatedAt = DateTime.UtcNow;
             await db.SaveChangesAsync(ct);
         }
 
-        var lessonCount = await db.Lessons.CountAsync(l => l.CourseId == id, ct);
-        return ToDto(course, lessonCount);
+        return ToDto(course, await CountLessonsAsync(id, ct));
     }
+
+    public async Task<AdminCourseDto> SetThumbnailAsync(Guid id, UploadedFile file, CancellationToken ct)
+    {
+        var course = await db.Courses.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new NotFoundException("Course not found.");
+
+        UploadRules.ValidateThumbnail(file);
+
+        var tempRef = $"thumbnails/{id}/{Guid.NewGuid():N}.upload";
+        await storage.SaveAsync(tempRef, file.Content, UploadLimits.MaxThumbnailBytes, ct);
+
+        string finalRef;
+        try
+        {
+            var extension = UploadRules.DetectImageExtension(await storage.ReadHeaderAsync(tempRef, 16, ct))
+                ?? throw new BadRequestException("The file is not a valid JPEG or PNG image.");
+
+            finalRef = $"thumbnails/{id}/{Guid.NewGuid():N}{extension}";
+            storage.AdoptFile(storage.GetPhysicalPath(tempRef), finalRef);
+        }
+        catch
+        {
+            storage.Delete(tempRef);
+            throw;
+        }
+
+        var previous = course.ThumbnailRef;
+        course.ThumbnailRef = finalRef;
+        course.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync(ct);
+
+        if (previous is not null) storage.Delete(previous);
+
+        return ToDto(course, await CountLessonsAsync(id, ct));
+    }
+
+    private async Task EnsureReadyToPublishAsync(Guid courseId, CancellationToken ct)
+    {
+        var statuses = await db.Lessons.Where(l => l.CourseId == courseId).Select(l => l.ProcessingStatus).ToListAsync(ct);
+
+        if (statuses.Count == 0)
+            throw new ConflictException("Add at least one lesson before publishing.");
+
+        var notReady = statuses.Count(s => s != ProcessingStatus.Ready);
+        if (notReady > 0)
+            throw new ConflictException($"{notReady} lesson(s) are not ready yet. Every lesson must finish processing before you publish.");
+    }
+
+    private Task<int> CountLessonsAsync(Guid courseId, CancellationToken ct) =>
+        db.Lessons.CountAsync(l => l.CourseId == courseId, ct);
 
     private async Task<(string Title, string Description, string Category, decimal Price)> NormalizeAsync(
         CourseUpsertRequest request, Guid? excludeCourseId, CancellationToken ct)

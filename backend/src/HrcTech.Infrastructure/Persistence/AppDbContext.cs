@@ -1,4 +1,5 @@
 using HrcTech.Domain.Entities;
+using HrcTech.Domain.Enums;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RoleNames = HrcTech.Domain.Constants.Roles;
@@ -55,7 +56,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             b.Property(l => l.Title).IsRequired().HasMaxLength(200);
             b.Property(l => l.Description).HasMaxLength(2000);
             b.Property(l => l.ContentType).HasConversion<string>().HasMaxLength(20);
+            b.Property(l => l.OriginalFileName).HasMaxLength(255);
+            b.Property(l => l.RawFileRef).HasMaxLength(500);
+            b.Property(l => l.ProcessedFileRef).HasMaxLength(500);
+            b.Property(l => l.ProcessingStatus).HasConversion<string>().HasMaxLength(20).HasDefaultValue(ProcessingStatus.NoContent);
+            b.Property(l => l.ProcessingStage).HasMaxLength(30);
+            b.Property(l => l.ProcessingError).HasMaxLength(500);
             b.HasIndex(l => new { l.CourseId, l.LessonOrder }).IsUnique();
+            b.HasIndex(l => l.ProcessingStatus);
         });
 
         // Roles are seeded with fixed IDs. No API can create or edit roles.
