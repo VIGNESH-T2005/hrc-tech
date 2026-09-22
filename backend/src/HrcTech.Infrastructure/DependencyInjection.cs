@@ -12,6 +12,8 @@ using HrcTech.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using HrcTech.Infrastructure.Content;
+using HrcTech.Infrastructure.Enrollments;
 
 namespace HrcTech.Infrastructure;
 
@@ -46,12 +48,15 @@ public static class DependencyInjection
         services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.SectionName));
         services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));
         services.Configure<ProcessingOptions>(configuration.GetSection(ProcessingOptions.SectionName));
-
+        services.Configure<ContentAccessOptions>(configuration.GetSection(ContentAccessOptions.SectionName));
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICourseCatalogService, CourseCatalogService>();
         services.AddScoped<IAdminCourseService, AdminCourseService>();
         services.AddScoped<IAdminLessonService, AdminLessonService>();
+        services.AddScoped<IEnrollmentService, EnrollmentService>();
+        services.AddScoped<IContentAccessService, ContentAccessService>();
+        services.AddScoped<IProgressService, ProgressService>();
         services.AddScoped<AdminSeeder>();
 
         services.AddSingleton<IFileStorage, LocalFileStorage>();

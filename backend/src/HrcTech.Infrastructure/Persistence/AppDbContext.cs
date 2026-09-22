@@ -12,7 +12,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Lesson> Lessons => Set<Lesson>();
-
+    public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+    public DbSet<LessonProgress> LessonProgress => Set<LessonProgress>();
+    public DbSet<ContentAccessToken> ContentAccessTokens => Set<ContentAccessToken>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -66,6 +68,35 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             b.HasIndex(l => l.ProcessingStatus);
         });
 
+                builder.Entity<Enrollment>(b =>
+        {
+            b.HasKey(e => e.Id);
+            b.HasIndex(e => new { e.StudentId, e.CourseId }).IsUnique().HasFilter("\"Status\" = 'Active'");
+            b.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
+            b.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.StudentId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(e => e.Course).WithMany().HasForeignKey(e => e.CourseId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<LessonProgress>(b =>
+        {
+            b.HasKey(p => p.Id);
+            b.HasIndex(p => new { p.StudentId, p.LessonId }).IsUnique();
+            b.HasIndex(p => new { p.StudentId, p.CourseId });
+            b.HasOne<ApplicationUser>().WithMany().HasForeignKey(p => p.StudentId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne<Lesson>().WithMany().HasForeignKey(p => p.LessonId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne<Course>().WithMany().HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<ContentAccessToken>(b =>
+        {
+            b.HasKey(t => t.Id);
+            b.Property(t => t.TokenHash).IsRequired().HasMaxLength(64);
+            b.HasIndex(t => t.TokenHash).IsUnique();
+            b.HasIndex(t => new { t.LessonId, t.ExpiresAt });
+            b.HasOne<ApplicationUser>().WithMany().HasForeignKey(t => t.StudentId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne<Lesson>().WithMany().HasForeignKey(t => t.LessonId).OnDelete(DeleteBehavior.Cascade);
+        });
+        
         // Roles are seeded with fixed IDs. No API can create or edit roles.
         builder.Entity<ApplicationRole>().HasData(
             new ApplicationRole
