@@ -7,6 +7,7 @@ public static class RateLimitPolicies
 {
     public const string AuthStrict = "auth-strict";     // login, register
     public const string AuthRefresh = "auth-refresh";   // refresh, logout
+    public const string ContentStream = "content-stream";
 }
 
 public static class RateLimitingExtensions
@@ -28,6 +29,7 @@ public static class RateLimitingExtensions
 
             options.AddPolicy(RateLimitPolicies.AuthStrict, http => PartitionByIp(http, strictLimit));
             options.AddPolicy(RateLimitPolicies.AuthRefresh, http => PartitionByIp(http, refreshLimit));
+            options.AddPolicy(RateLimitPolicies.ContentStream, http =>PartitionByIp(http, configuration.GetValue("RateLimiting:ContentStreamPerMinute", 120)));
         });
 
         return services;
