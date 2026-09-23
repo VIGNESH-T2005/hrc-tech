@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HrcTech.Infrastructure.Content;
 using HrcTech.Infrastructure.Enrollments;
+using HrcTech.Infrastructure.Payments;
 
 namespace HrcTech.Infrastructure;
 
@@ -49,6 +50,7 @@ public static class DependencyInjection
         services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));
         services.Configure<ProcessingOptions>(configuration.GetSection(ProcessingOptions.SectionName));
         services.Configure<ContentAccessOptions>(configuration.GetSection(ContentAccessOptions.SectionName));
+        services.Configure<StripeOptions>(configuration.GetSection(StripeOptions.SectionName));
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICourseCatalogService, CourseCatalogService>();
@@ -57,6 +59,8 @@ public static class DependencyInjection
         services.AddScoped<IEnrollmentService, EnrollmentService>();
         services.AddScoped<IContentAccessService, ContentAccessService>();
         services.AddScoped<IProgressService, ProgressService>();
+        services.AddScoped<IPaymentGateway, StripePaymentGateway>();
+        services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<AdminSeeder>();
 
         services.AddSingleton<IFileStorage, LocalFileStorage>();

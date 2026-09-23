@@ -7,6 +7,7 @@ public class Payment
     public Guid Id { get; set; }
     public Guid StudentId { get; set; }
     public Guid CourseId { get; set; }
+    public Course Course { get; set; } = null!;
     public string Gateway { get; set; } = "Stripe";
     public string? GatewayOrderId { get; set; }     // Stripe Checkout Session id
     public string? GatewayPaymentId { get; set; }   // Stripe PaymentIntent id, set once payment starts
