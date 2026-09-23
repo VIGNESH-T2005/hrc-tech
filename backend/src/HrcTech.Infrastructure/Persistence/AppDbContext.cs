@@ -15,6 +15,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
     public DbSet<LessonProgress> LessonProgress => Set<LessonProgress>();
     public DbSet<ContentAccessToken> ContentAccessTokens => Set<ContentAccessToken>();
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<WebhookEvent> WebhookEvents => Set<WebhookEvent>();
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -68,7 +71,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             b.HasIndex(l => l.ProcessingStatus);
         });
 
-                builder.Entity<Enrollment>(b =>
+        builder.Entity<Enrollment>(b =>
         {
             b.HasKey(e => e.Id);
             b.HasIndex(e => new { e.StudentId, e.CourseId }).IsUnique().HasFilter("\"Status\" = 'Active'");
@@ -96,6 +99,31 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             b.HasOne<ApplicationUser>().WithMany().HasForeignKey(t => t.StudentId).OnDelete(DeleteBehavior.Cascade);
             b.HasOne<Lesson>().WithMany().HasForeignKey(t => t.LessonId).OnDelete(DeleteBehavior.Cascade);
         });
+        
+                builder.Entity<Payment>(b =>
+        {
+            b.HasKey(p => p.Id);
+            b.Property(p => p.Amount).HasPrecision(12, 2);
+            b.Property(p => p.Currency).HasMaxLength(3);
+            b.Property(p => p.Gateway).HasMaxLength(30);
+            b.Property(p => p.GatewayOrderId).HasMaxLength(255);
+            b.Property(p => p.GatewayPaymentId).HasMaxLength(255);
+            b.Property(p => p.Status).HasConversion<string>().HasMaxLength(20);
+            b.HasIndex(p => p.GatewayOrderId).IsUnique().HasFilter("\"GatewayOrderId\" IS NOT NULL");
+            b.HasIndex(p => p.GatewayPaymentId).IsUnique().HasFilter("\"GatewayPaymentId\" IS NOT NULL");
+            b.HasIndex(p => new { p.StudentId, p.CourseId, p.Status });
+            b.HasOne<ApplicationUser>().WithMany().HasForeignKey(p => p.StudentId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(p => p.Course).WithMany().HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<WebhookEvent>(b =>
+        {
+            b.HasKey(w => w.Id);
+            b.Property(w => w.GatewayEventId).IsRequired().HasMaxLength(255);
+            b.HasIndex(w => w.GatewayEventId).IsUnique();
+        });
+
+        builder.Entity<Enrollment>().HasOne<Payment>().WithMany().HasForeignKey(e => e.PaymentId).OnDelete(DeleteBehavior.SetNull);
         
         // Roles are seeded with fixed IDs. No API can create or edit roles.
         builder.Entity<ApplicationRole>().HasData(

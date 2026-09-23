@@ -42,6 +42,33 @@ public sealed class EnrollmentService(AppDbContext db, UserManager<ApplicationUs
         return new EnrollmentDto(enrollment.Id, student.Id, student.Email ?? string.Empty, course.Id, course.Title, enrollment.Status.ToString(), enrollment.EnrolledAt);
     }
 
+        public async Task EnsureEnrolledFromPaymentAsync(Guid studentId, Guid courseId, Guid paymentId, CancellationToken ct)
+    {
+        if (await db.Enrollments.AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId && e.Status == EnrollmentStatus.Active, ct))
+            return;   // already enrolled (e.g. an admin grant, or the webhook fired twice)
+
+        var enrollment = new Enrollment
+        {
+            Id = Guid.NewGuid(),
+            StudentId = studentId,
+            CourseId = courseId,
+            PaymentId = paymentId,
+            Status = EnrollmentStatus.Active,
+            EnrolledAt = DateTime.UtcNow
+        };
+
+        db.Enrollments.Add(enrollment);
+
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException)
+        {
+            // The filtered unique index caught a race (e.g. two webhook deliveries at once). That's fine.
+        }
+    }
+
     public Task<bool> IsActivelyEnrolledAsync(Guid studentId, Guid courseId, CancellationToken ct) =>
         db.Enrollments.AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId && e.Status == EnrollmentStatus.Active, ct);
 
