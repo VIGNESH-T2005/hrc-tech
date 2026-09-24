@@ -17,6 +17,7 @@ public sealed class StripePaymentGateway : IPaymentGateway
             throw new InvalidOperationException("Stripe:SecretKey is not configured.");
 
         StripeConfiguration.ApiKey = _o.SecretKey;
+        
     }
 
     public async Task<CheckoutSessionResult> CreateCheckoutSessionAsync(CheckoutSessionRequest request, CancellationToken ct)
@@ -66,7 +67,7 @@ public sealed class StripePaymentGateway : IPaymentGateway
 
         // Throws StripeException if the signature does not match. That exception is what
         // proves the request really came from Stripe and hasn't been tampered with.
-        var stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, _o.WebhookSecret);
+        var stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, _o.WebhookSecret, throwOnApiVersionMismatch: false);
 
         if (stripeEvent.Data.Object is Session session)
         {
