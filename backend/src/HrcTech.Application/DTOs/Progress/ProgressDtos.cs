@@ -20,4 +20,5 @@ public sealed record LessonProgressDto(
 public sealed record CourseProgressDto(
     Guid CourseId, int TotalLessons, int CompletedLessons,
     int OverallPercentage, bool AllLessonsCompleted,
-    IReadOnlyList<LessonProgressDto> Lessons);
+    IReadOnlyList<LessonProgressDto> Lessons,
+    bool HasQuiz, bool QuizUnlocked, bool QuizPassed, bool CourseCompleted);

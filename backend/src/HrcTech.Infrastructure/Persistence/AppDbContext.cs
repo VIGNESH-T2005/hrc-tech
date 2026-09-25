@@ -16,6 +16,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<LessonProgress> LessonProgress => Set<LessonProgress>();
     public DbSet<ContentAccessToken> ContentAccessTokens => Set<ContentAccessToken>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<Quiz> Quizzes => Set<Quiz>();
+    public DbSet<QuizQuestion> QuizQuestions => Set<QuizQuestion>();
+    public DbSet<QuizOption> QuizOptions => Set<QuizOption>();
+    public DbSet<QuizAttempt> QuizAttempts => Set<QuizAttempt>();
     public DbSet<WebhookEvent> WebhookEvents => Set<WebhookEvent>();
     
     protected override void OnModelCreating(ModelBuilder builder)
@@ -100,7 +104,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             b.HasOne<Lesson>().WithMany().HasForeignKey(t => t.LessonId).OnDelete(DeleteBehavior.Cascade);
         });
         
-                builder.Entity<Payment>(b =>
+        builder.Entity<Payment>(b =>
         {
             b.HasKey(p => p.Id);
             b.Property(p => p.Amount).HasPrecision(12, 2);
@@ -122,7 +126,37 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             b.Property(w => w.GatewayEventId).IsRequired().HasMaxLength(255);
             b.HasIndex(w => w.GatewayEventId).IsUnique();
         });
+        builder.Entity<Quiz>(b =>
+        {
+            b.HasKey(q => q.Id);
+            b.Property(q => q.Title).IsRequired().HasMaxLength(200);
+            b.HasIndex(q => q.CourseId).IsUnique();
+            b.HasOne<Course>().WithMany().HasForeignKey(q => q.CourseId).OnDelete(DeleteBehavior.Cascade);
+            b.HasMany(q => q.Questions).WithOne().HasForeignKey(x => x.QuizId).OnDelete(DeleteBehavior.Cascade);
+        });
 
+        builder.Entity<QuizQuestion>(b =>
+        {
+            b.HasKey(q => q.Id);
+            b.Property(q => q.QuestionText).IsRequired().HasMaxLength(1000);
+            b.HasIndex(q => new { q.QuizId, q.QuestionOrder }).IsUnique();
+            b.HasMany(q => q.Options).WithOne().HasForeignKey(o => o.QuestionId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<QuizOption>(b =>
+        {
+            b.HasKey(o => o.Id);
+            b.Property(o => o.OptionText).IsRequired().HasMaxLength(500);
+            b.HasIndex(o => new { o.QuestionId, o.OptionOrder }).IsUnique();
+        });
+
+        builder.Entity<QuizAttempt>(b =>
+        {
+            b.HasKey(a => a.Id);
+            b.HasIndex(a => new { a.QuizId, a.StudentId, a.AttemptedAt });
+            b.HasOne<Quiz>().WithMany().HasForeignKey(a => a.QuizId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne<ApplicationUser>().WithMany().HasForeignKey(a => a.StudentId).OnDelete(DeleteBehavior.Restrict);
+        });
         builder.Entity<Enrollment>().HasOne<Payment>().WithMany().HasForeignKey(e => e.PaymentId).OnDelete(DeleteBehavior.SetNull);
         
         // Roles are seeded with fixed IDs. No API can create or edit roles.

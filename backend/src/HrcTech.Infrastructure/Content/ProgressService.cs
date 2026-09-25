@@ -88,10 +88,27 @@ public sealed class ProgressService(AppDbContext db, IEnrollmentService enrollme
 
         var completed = items.Count(i => i.IsCompleted);
         var overall = items.Count == 0 ? 0 : (int)Math.Round(items.Average(i => i.ProgressPercentage));
+        var allLessonsCompleted = items.Count > 0 && completed == items.Count;
+        var (hasQuiz, quizUnlocked, quizPassed) = await GetQuizStateAsync(studentId, courseId, allLessonsCompleted, ct);
+        var courseCompleted = allLessonsCompleted && (!hasQuiz || quizPassed);
 
-        return new CourseProgressDto(courseId, items.Count, completed, overall, items.Count > 0 && completed == items.Count, items);
+        return new CourseProgressDto(courseId, items.Count, completed, overall, allLessonsCompleted, items, hasQuiz, quizUnlocked, quizPassed, courseCompleted);
     }
 
+    private async Task<(bool HasQuiz, bool Unlocked, bool Passed)> GetQuizStateAsync(Guid studentId, Guid courseId, bool allLessonsCompleted, CancellationToken ct)
+    {
+        var quizId = await db.Quizzes.AsNoTracking().Where(q => q.CourseId == courseId).Select(q => (Guid?)q.Id).FirstOrDefaultAsync(ct);
+        if (quizId is null) return (false, false, false);
+
+        var passed = await db.QuizAttempts.AsNoTracking()
+            .Where(a => a.QuizId == quizId && a.StudentId == studentId)
+            .OrderByDescending(a => a.AttemptedAt)
+            .Select(a => (bool?)a.Passed)
+            .FirstOrDefaultAsync(ct) ?? false;
+
+        return (true, allLessonsCompleted, passed);
+    }
+    
     private (int Percentage, int? Position, bool Completed) ComputeVideo(Lesson lesson, ProgressUpdateRequest request)
     {
         if (request.PositionSeconds is null) throw new BadRequestException("positionSeconds is required for a video lesson.");

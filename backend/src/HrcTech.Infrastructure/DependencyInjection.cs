@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using HrcTech.Infrastructure.Content;
 using HrcTech.Infrastructure.Enrollments;
 using HrcTech.Infrastructure.Payments;
+using HrcTech.Infrastructure.Quizzes;
 
 namespace HrcTech.Infrastructure;
 
@@ -61,6 +62,8 @@ public static class DependencyInjection
         services.AddScoped<IProgressService, ProgressService>();
         services.AddScoped<IPaymentGateway, StripePaymentGateway>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IAdminQuizService, AdminQuizService>();
+        services.AddScoped<IStudentQuizService, StudentQuizService>();
         services.AddScoped<AdminSeeder>();
 
         services.AddSingleton<IFileStorage, LocalFileStorage>();
