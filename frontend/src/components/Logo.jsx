@@ -7,11 +7,11 @@ export default function Logo({ size = 'md' }) {
 
   return (
     <div className="flex items-center gap-2.5">
-      <div className={`gradient-brand flex ${box} shrink-0 items-center justify-center rounded-xl text-white shadow-md shadow-purple-900/20`}>
+      <div className={`gradient-gold flex ${box} shrink-0 items-center justify-center rounded-xl text-slate-950 shadow-md shadow-amber-900/30`}>
         <GraduationCap size={icon} strokeWidth={2.25} />
       </div>
-      <span className={`${text} font-extrabold tracking-tight text-slate-900`}>
-        HRC <span className="gradient-brand-text">TECH</span>
+      <span className={`${text} font-extrabold tracking-tight text-slate-100`}>
+        HRC <span className="gradient-gold-text">TECH</span>
       </span>
     </div>
   );

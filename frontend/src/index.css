@@ -1,17 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --brand-purple: #6d28d9;
-  --brand-purple-light: #8b5cf6;
-  --brand-teal: #0f766e;
-  --brand-teal-light: #14b8a6;
-  --brand-orange: #ea580c;
+  --bg-base: #0a0a0f;
+  --bg-surface: #14141c;
+  --bg-surface-raised: #1b1b26;
+  --border-subtle: #2a2a38;
+  --gold: #d4af37;
+  --gold-light: #f0d371;
+  --gold-dim: #9c7f2c;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  background: var(--bg-base);
+  color: #f1ede2;
+  @apply antialiased;
 }
 
-.gradient-brand { background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-teal) 100%); }
-.gradient-brand-text { background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-teal) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.card-shadow { box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 24px -8px rgba(15,23,42,.08); }
+.gradient-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); }
+.gradient-gold-text { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.surface { background: var(--bg-surface); border: 1px solid var(--border-subtle); }
+.surface-raised { background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); }
+.card-shadow { box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -10px rgba(212,175,55,.08); }

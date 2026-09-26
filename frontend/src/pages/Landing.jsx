@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShieldCheck, PlayCircle, FileCheck2, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
+import { ShieldCheck, FileCheck2, TrendingUp, Sparkles, ArrowRight, Youtube, Play } from 'lucide-react';
+
+const YOUTUBE_URL = 'https://youtube.com/@hrctech'; // TODO: replace with your real channel URL
+const YOUTUBE_EMBED = 'https://www.youtube.com/embed?listType=user_uploads&list=hrctech'; // TODO: replace with a real video/playlist embed URL
 
 const features = [
   { icon: ShieldCheck, title: 'Protected Content', text: 'Every video and PDF is streamed through short-lived, entitlement-checked links — never a raw file.' },
@@ -15,28 +18,28 @@ export default function Landing() {
   return (
     <div className="overflow-hidden">
       <section className="relative">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-50 via-white to-teal-50" />
-        <div className="absolute -top-24 -right-24 -z-10 h-96 w-96 rounded-full bg-purple-200/40 blur-3xl" />
-        <div className="absolute top-40 -left-24 -z-10 h-72 w-72 rounded-full bg-teal-200/40 blur-3xl" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_#1b1b26_0%,_#0a0a0f_70%)]" />
+        <div className="absolute -top-24 -right-24 -z-10 h-96 w-96 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="absolute top-40 -left-24 -z-10 h-72 w-72 rounded-full bg-amber-700/10 blur-3xl" />
 
         <div className="mx-auto max-w-4xl px-4 py-24 text-center">
           <motion.span
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-[var(--brand-purple)] shadow-sm"
+            className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-amber-700/40 bg-[var(--bg-surface)] px-3.5 py-1.5 text-xs font-semibold text-amber-300 shadow-sm"
           >
             <Sparkles size={13} /> Learn. Build. Get Placed.
           </motion.span>
 
           <motion.h1
             initial="hidden" animate="show" variants={fadeUp} transition={{ duration: 0.5, delay: 0.05 }}
-            className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl"
+            className="text-4xl font-extrabold tracking-tight text-slate-100 sm:text-5xl"
           >
-            Master real skills with<br /><span className="gradient-brand-text">watermarked, protected courses</span>
+            Master real skills with<br /><span className="gradient-gold-text">watermarked, protected courses</span>
           </motion.h1>
 
           <motion.p
             initial="hidden" animate="show" variants={fadeUp} transition={{ duration: 0.5, delay: 0.15 }}
-            className="mx-auto mt-5 max-w-xl text-slate-600"
+            className="mx-auto mt-5 max-w-xl text-slate-400"
           >
             Video and PDF lessons, tracked progress, and a quiz to confirm what you've learned —
             every course built and taught by HRC TECH.
@@ -48,13 +51,13 @@ export default function Landing() {
           >
             <Link
               to="/courses"
-              className="gradient-brand group flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-white shadow-lg shadow-purple-900/20 transition hover:-translate-y-0.5 hover:shadow-xl"
+              className="gradient-gold group flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-slate-950 shadow-lg shadow-amber-900/20 transition hover:-translate-y-0.5 hover:shadow-xl"
             >
               Browse courses <ArrowRight size={17} className="transition group-hover:translate-x-1" />
             </Link>
             <Link
               to="/register"
-              className="flex items-center gap-2 rounded-full border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-700 transition hover:border-slate-400"
+              className="flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-7 py-3.5 font-semibold text-slate-200 transition hover:border-amber-700/50"
             >
               Create account
             </Link>
@@ -62,7 +65,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-4 py-20">
+      <section className="mx-auto max-w-5xl px-4 py-16">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f, i) => (
             <motion.div
@@ -71,24 +74,61 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="card-shadow rounded-2xl border border-slate-100 bg-white p-5 transition hover:-translate-y-1"
+              className="surface card-shadow rounded-2xl p-5 transition hover:-translate-y-1 hover:border-amber-700/40"
             >
-              <div className="gradient-brand mb-4 flex h-10 w-10 items-center justify-center rounded-xl text-white">
+              <div className="gradient-gold mb-4 flex h-10 w-10 items-center justify-center rounded-xl text-slate-950">
                 <f.icon size={19} />
               </div>
-              <h3 className="font-semibold text-slate-900">{f.title}</h3>
-              <p className="mt-1.5 text-sm text-slate-500">{f.text}</p>
+              <h3 className="font-semibold text-slate-100">{f.title}</h3>
+              <p className="mt-1.5 text-sm text-slate-400">{f.text}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      <section className="border-t border-slate-100 bg-white py-16">
+      {/* YouTube promo showcase */}
+      <section className="border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] py-16">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-red-600 text-white">
+              <Youtube size={22} />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-100">Watch us on YouTube</h2>
+            <p className="mt-1 max-w-md text-sm text-slate-400">Free full-stack tutorials, project walkthroughs, and placement tips — the same team behind HRC TECH.</p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="surface card-shadow mx-auto max-w-3xl overflow-hidden rounded-2xl"
+          >
+            <div className="aspect-video w-full bg-black">
+              <iframe
+                src={YOUTUBE_EMBED}
+                title="HRC TECH on YouTube"
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <div className="flex items-center justify-between p-4">
+              <span className="text-sm text-slate-400">@hrctech</span>
+              <a href={YOUTUBE_URL} target="_blank" rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500">
+                <Play size={14} fill="currentColor" /> View channel
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="py-16">
         <div className="mx-auto max-w-2xl px-4 text-center">
-          <PlayCircle size={36} className="mx-auto mb-4 text-[var(--brand-purple)]" strokeWidth={1.5} />
-          <h2 className="text-2xl font-bold text-slate-900">Ready to start learning?</h2>
-          <p className="mt-2 text-slate-500">Sign up free and get instant access to every published course.</p>
-          <Link to="/register" className="mt-6 inline-block rounded-full bg-[var(--brand-teal)] px-7 py-3 font-semibold text-white shadow-md transition hover:opacity-90">
+          <h2 className="text-2xl font-bold text-slate-100">Ready to start learning?</h2>
+          <p className="mt-2 text-slate-400">Sign up free and get instant access to every published course.</p>
+          <Link to="/register" className="mt-6 inline-block rounded-full bg-amber-400 px-7 py-3 font-semibold text-slate-950 shadow-md transition hover:bg-amber-300">
             Get started
           </Link>
         </div>

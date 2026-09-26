@@ -15,6 +15,7 @@ import QuizPage from './pages/QuizPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCourses from './pages/admin/AdminCourses';
 import AdminCourseEditor from './pages/admin/AdminCourseEditor';
+import Footer from './components/Footer';
 
 export default function App() {
   return (
