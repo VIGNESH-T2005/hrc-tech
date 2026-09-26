@@ -27,7 +27,7 @@ public sealed class StripePaymentGateway : IPaymentGateway
         var options = new SessionCreateOptions
         {
             Mode = "payment",
-            SuccessUrl = _o.SuccessUrl,
+            SuccessUrl = $"{_o.SuccessUrl}&courseId={request.CourseId}",
             CancelUrl = _o.CancelUrl,
             CustomerEmail = request.StudentEmail,
             ClientReferenceId = request.PaymentId.ToString(),
