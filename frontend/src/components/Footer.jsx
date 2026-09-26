@@ -1,4 +1,6 @@
-import { Youtube, Play } from 'lucide-react';
+
+import { Play } from 'lucide-react';
+import YoutubeIcon from './YoutubeIcon';
 import Logo from './Logo';
 
 const YOUTUBE_URL = 'https://youtube.com/@hrctech'; // TODO: replace with your real channel URL
@@ -9,7 +11,7 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-14">
         <div className="surface-raised card-shadow flex flex-col items-center gap-5 rounded-2xl border-red-900/30 bg-gradient-to-br from-red-950/40 to-[var(--bg-surface-raised)] p-8 text-center sm:flex-row sm:text-left">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-red-600 text-white">
-            <Youtube size={28} />
+        <YoutubeIcon size={28} />
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-bold text-slate-100">Free tutorials on our YouTube channel</h3>

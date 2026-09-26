@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShieldCheck, FileCheck2, TrendingUp, Sparkles, ArrowRight, Youtube, Play } from 'lucide-react';
+import { ShieldCheck, FileCheck2, TrendingUp, Sparkles, ArrowRight, Play } from 'lucide-react';
+import YoutubeIcon from '../components/YoutubeIcon';
 
-const YOUTUBE_URL = 'https://youtube.com/@hrctech'; // TODO: replace with your real channel URL
-const YOUTUBE_EMBED = 'https://www.youtube.com/embed?listType=user_uploads&list=hrctech'; // TODO: replace with a real video/playlist embed URL
+const YOUTUBE_URL = 'https://www.youtube.com/@hrctechinsights'; // TODO: replace with your real channel URL
+const YOUTUBE_EMBED = 'https://www.youtube.com/embed/videoseries?list=PLNZ_OXckl0-gVKyepradjsl73RABRtvXV'; // TODO: replace with a real video/playlist embed URL
 
 const features = [
   { icon: ShieldCheck, title: 'Protected Content', text: 'Every video and PDF is streamed through short-lived, entitlement-checked links — never a raw file.' },
@@ -34,7 +35,7 @@ export default function Landing() {
             initial="hidden" animate="show" variants={fadeUp} transition={{ duration: 0.5, delay: 0.05 }}
             className="text-4xl font-extrabold tracking-tight text-slate-100 sm:text-5xl"
           >
-            Master real skills with<br /><span className="gradient-gold-text">watermarked, protected courses</span>
+            Your Learning Journey Starts with HRC Tech<br /><span className="gradient-gold-text">engaging courses and practical lessons.</span>
           </motion.h1>
 
           <motion.p
@@ -91,7 +92,7 @@ export default function Landing() {
         <div className="mx-auto max-w-5xl px-4">
           <div className="mb-8 flex flex-col items-center text-center">
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-red-600 text-white">
-              <Youtube size={22} />
+            <YoutubeIcon size={22} />
             </div>
             <h2 className="text-2xl font-bold text-slate-100">Watch us on YouTube</h2>
             <p className="mt-1 max-w-md text-sm text-slate-400">Free full-stack tutorials, project walkthroughs, and placement tips — the same team behind HRC TECH.</p>

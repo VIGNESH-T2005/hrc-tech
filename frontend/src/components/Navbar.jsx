@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Youtube } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
+import YoutubeIcon from './YoutubeIcon';
 
-const YOUTUBE_URL = 'https://youtube.com/@hrctech'; // TODO: replace with your real channel URL
+const YOUTUBE_URL = 'https://youtube.com/@hrctechinsights'; // TODO: replace with your real channel URL
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -16,9 +17,11 @@ export default function Navbar() {
         <nav className="flex items-center gap-5 text-sm font-medium text-slate-400">
           <a href={YOUTUBE_URL} target="_blank" rel="noreferrer"
             className="flex items-center gap-1.5 transition hover:text-red-400">
-            <Youtube size={16} /> YouTube
+            <YoutubeIcon size={16} /> YouTube
           </a>
-          <Link to="/courses" className="transition hover:text-amber-300">Courses</Link>
+          {user?.role !== 'Admin' && (
+            <Link to="/courses" className="transition hover:text-amber-300">Courses</Link>
+          )}
           {!user && <Link to="/login" className="transition hover:text-amber-300">Login</Link>}
           {!user && (
             <Link to="/register" className="gradient-gold rounded-full px-4 py-2 font-semibold text-slate-950 shadow-sm transition hover:brightness-105">
