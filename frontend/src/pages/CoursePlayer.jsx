@@ -46,16 +46,28 @@ export default function CoursePlayer() {
         )}
       </div>
 
-      <aside className="rounded border bg-white p-4">
-        <p className="mb-3 text-sm font-semibold">{progress.completedLessons}/{progress.totalLessons} lessons complete</p>
-        <ul className="space-y-1">
+            <aside className="card-shadow h-fit rounded-2xl border border-slate-100 bg-white p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm font-bold text-slate-900">Lessons</p>
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">
+            {progress.completedLessons}/{progress.totalLessons}
+          </span>
+        </div>
+        <ul className="space-y-1.5">
           {progress.lessons.map((l) => (
             <li key={l.lessonId}>
               <button
                 onClick={() => setActiveId(l.lessonId)}
-                className={`w-full rounded px-2 py-1.5 text-left text-sm ${l.lessonId === activeId ? 'bg-[var(--brand-teal)] text-white' : 'hover:bg-slate-100'}`}
+                className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${
+                  l.lessonId === activeId ? 'gradient-brand text-white shadow-md' : 'text-slate-600 hover:bg-slate-50'
+                }`}
               >
-                {l.isCompleted ? '✅' : '▶'} {l.order}. {l.title}
+                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${
+                  l.isCompleted ? 'bg-emerald-400 text-white' : l.lessonId === activeId ? 'bg-white/25' : 'bg-slate-200 text-slate-500'
+                }`}>
+                  {l.isCompleted ? '✓' : l.order}
+                </span>
+                <span className="truncate">{l.title}</span>
               </button>
             </li>
           ))}
@@ -63,18 +75,20 @@ export default function CoursePlayer() {
 
         {progress.hasQuiz && (
           progress.quizUnlocked ? (
-            <Link to={`/learn/${courseId}/quiz`} className="mt-4 block rounded bg-[var(--brand-orange)] px-3 py-2 text-center text-sm text-white">
+            <Link to={`/learn/${courseId}/quiz`} className="mt-5 block rounded-xl bg-[var(--brand-orange)] px-3 py-2.5 text-center text-sm font-semibold text-white shadow-md transition hover:opacity-90">
               {progress.quizPassed ? 'Review Quiz (Passed)' : 'Take the Quiz'}
             </Link>
           ) : (
-            <p className="mt-4 rounded bg-slate-100 px-3 py-2 text-center text-xs text-slate-500">
+            <p className="mt-5 rounded-xl bg-slate-50 px-3 py-2.5 text-center text-xs text-slate-400">
               Complete all lessons to unlock the quiz
             </p>
           )
         )}
 
         {progress.courseCompleted && (
-          <p className="mt-3 text-center text-sm font-semibold text-[var(--brand-teal)]">🎉 Course Completed</p>
+          <p className="mt-3 rounded-xl bg-emerald-50 px-3 py-2.5 text-center text-sm font-semibold text-emerald-700">
+            🎉 Course Completed
+          </p>
         )}
       </aside>
     </div>
