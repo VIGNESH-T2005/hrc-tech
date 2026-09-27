@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Plus, Save, CheckCircle2 } from 'lucide-react';
 import api from '../../services/api';
 import { errorMessage } from '../../services/errors';
@@ -47,10 +48,10 @@ export default function QuizEditor({ courseId }) {
   };
 
   return (
-    <div className="surface card-shadow rounded-2xl p-5">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="surface card-shadow rounded-2xl p-5 transition hover:border-amber-700/30">
       <h2 className="mb-4 font-semibold text-slate-100">Quiz</h2>
       <input placeholder="Quiz title"
-        className="mb-3 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-base)] px-3.5 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-amber-500"
+        className="mb-3 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-base)] px-3.5 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500"
         value={quiz.title} onChange={e => setQuiz({ ...quiz, title: e.target.value })} />
       <label className="mb-5 block text-sm text-slate-400">
         Passing score (%)
@@ -60,26 +61,27 @@ export default function QuizEditor({ courseId }) {
       </label>
 
       {quiz.questions.map((q, qi) => (
-        <div key={qi} className="mb-3 rounded-xl border border-[var(--border-subtle)] p-4">
+        <motion.div key={qi} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: qi * 0.05 }}
+          className="mb-3 rounded-xl border border-[var(--border-subtle)] p-4 transition hover:border-amber-700/30">
           <input placeholder={`Question ${qi + 1}`}
-            className="mb-2 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] px-2.5 py-1.5 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-amber-500"
+            className="mb-2 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] px-2.5 py-1.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500"
             value={q.questionText} onChange={e => updateQuestion(qi, { questionText: e.target.value })} />
           {q.options.map((o, oi) => (
             <div key={oi} className="mb-1.5 flex items-center gap-2">
               <input type="radio" name={`correct-${qi}`} checked={o.isCorrect} onChange={() => setCorrect(qi, oi)}
                 className="accent-amber-400" />
               <input placeholder={`Option ${oi + 1}`}
-                className="flex-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] px-2.5 py-1.5 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-amber-500"
+                className="flex-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] px-2.5 py-1.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500"
                 value={o.optionText} onChange={e => updateOption(qi, oi, { optionText: e.target.value })} />
             </div>
           ))}
-          <button type="button" className="mt-1 flex items-center gap-1 text-xs font-medium text-amber-400"
+          <button type="button" className="mt-1 flex items-center gap-1 text-xs font-medium text-amber-400 transition hover:text-amber-300"
             onClick={() => updateQuestion(qi, { options: [...q.options, blankOption()] })}>
             <Plus size={12} /> Add option
           </button>
-        </div>
+        </motion.div>
       ))}
-      <button type="button" className="mb-4 flex items-center gap-1 text-sm font-medium text-amber-400"
+      <button type="button" className="mb-4 flex items-center gap-1 text-sm font-medium text-amber-400 transition hover:text-amber-300"
         onClick={() => setQuiz({ ...quiz, questions: [...quiz.questions, blankQuestion()] })}>
         <Plus size={14} /> Add question
       </button>
@@ -87,9 +89,9 @@ export default function QuizEditor({ courseId }) {
       {error && <p className="mb-3 rounded-lg bg-red-950/40 px-3 py-2 text-sm text-red-400">{error}</p>}
       {saved && <p className="mb-3 flex items-center gap-1.5 text-sm text-emerald-400"><CheckCircle2 size={14} /> Saved.</p>}
       <button onClick={save} disabled={saving}
-        className="flex items-center gap-2 rounded-xl bg-amber-400 px-5 py-2.5 font-semibold text-slate-950 transition hover:bg-amber-300 disabled:opacity-60">
+        className="flex items-center gap-2 rounded-xl bg-amber-400 px-5 py-2.5 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-amber-300 disabled:opacity-60 disabled:hover:translate-y-0">
         <Save size={15} /> {saving ? 'Saving…' : 'Save Quiz'}
       </button>
-    </div>
+    </motion.div>
   );
 }

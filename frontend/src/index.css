@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 :root {
   --bg-base: #0a0a0f;
   --bg-surface: #14141c;
@@ -21,3 +22,12 @@ body {
 .surface { background: var(--bg-surface); border: 1px solid var(--border-subtle); }
 .surface-raised { background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); }
 .card-shadow { box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -10px rgba(212,175,55,.08); }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -30px) scale(1.08); }
+}

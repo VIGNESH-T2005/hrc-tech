@@ -1,30 +1,49 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, Layers } from 'lucide-react';
+import { BookOpen, Layers, SearchX } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import EmptyState from '../components/EmptyState';
+import GlowBackground from '../components/GlowBackground';
 
 export default function Courses() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get('search') ?? '';
   const [courses, setCourses] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/courses').then(({ data }) => setCourses(data.items)).catch(() => setError('Could not load courses.'));
-  }, []);
+    setCourses(null);
+    const query = search ? { params: { search } } : undefined;
+    api.get('/courses', query).then(({ data }) => setCourses(data.items)).catch(() => setError('Could not load courses.'));
+  }, [search]);
 
   if (error) return <p className="p-8 text-center text-red-400">{error}</p>;
   if (!courses) return <SkeletonGrid />;
   if (courses.length === 0) {
-    return <EmptyState icon={BookOpen} title="No courses yet" message="Check back soon — new courses are published regularly." />;
+    return (
+      <div className="relative">
+        <GlowBackground />
+        <EmptyState
+          icon={search ? SearchX : BookOpen}
+          title={search ? `No results for "${search}"` : 'No courses yet'}
+          message={search ? 'Try a different search term.' : 'Check back soon — new courses are published regularly.'}
+        />
+      </div>
+    );
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-3xl font-extrabold text-slate-100">Courses</h1>
-      <p className="mt-1 text-slate-400">{courses.length} course{courses.length !== 1 && 's'} available</p>
+    <div className="relative mx-auto max-w-6xl px-4 py-12">
+      <GlowBackground />
+      <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-extrabold text-slate-100">
+        {search ? `Results for "${search}"` : 'Courses'}
+      </motion.h1>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="mt-1 text-slate-400">
+        {courses.length} course{courses.length !== 1 && 's'} available
+      </motion.p>
 
       <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {courses.map((c, i) => (
@@ -55,7 +74,8 @@ export default function Courses() {
 
 function SkeletonGrid() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="relative mx-auto max-w-6xl px-4 py-12">
+      <GlowBackground />
       <div className="mb-8 h-8 w-40 animate-pulse rounded bg-slate-800" />
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {[...Array(6)].map((_, i) => (
