@@ -4,10 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 import YoutubeIcon from './YoutubeIcon';
 
-const YOUTUBE_URL = 'https://youtube.com/@hrctechinsights'; // TODO: replace with your real channel URL
+const YOUTUBE_URL = 'https://www.youtube.com/@hrctechinsights';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, ready, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -19,17 +19,23 @@ export default function Navbar() {
             className="flex items-center gap-1.5 transition hover:text-red-400">
             <YoutubeIcon size={16} /> YouTube
           </a>
+
           {user?.role !== 'Admin' && (
             <Link to="/courses" className="transition hover:text-amber-300">Courses</Link>
           )}
-          {!user && <Link to="/login" className="transition hover:text-amber-300">Login</Link>}
-          {!user && (
-            <Link to="/register" className="gradient-gold rounded-full px-4 py-2 font-semibold text-slate-950 shadow-sm transition hover:brightness-105">
-              Sign up
-            </Link>
+
+          {ready && !user && (
+            <>
+              <Link to="/login" className="transition hover:text-amber-300">Login</Link>
+              <Link to="/register" className="gradient-gold rounded-full px-4 py-2 font-semibold text-slate-950 shadow-sm transition hover:brightness-105">
+                Sign up
+              </Link>
+            </>
           )}
+
           {user?.role === 'Student' && <Link to="/dashboard" className="transition hover:text-amber-300">My Courses</Link>}
           {user?.role === 'Admin' && <Link to="/admin" className="transition hover:text-amber-300">Admin</Link>}
+
           {user && (
             <button
               onClick={async () => { await logout(); navigate('/'); }}

@@ -109,15 +109,22 @@ public sealed class ProgressService(AppDbContext db, IEnrollmentService enrollme
         return (true, allLessonsCompleted, passed);
     }
     
-    private (int Percentage, int? Position, bool Completed) ComputeVideo(Lesson lesson, ProgressUpdateRequest request)
+        private (int Percentage, int? Position, bool Completed) ComputeVideo(Lesson lesson, ProgressUpdateRequest request)
     {
         if (request.PositionSeconds is null) throw new BadRequestException("positionSeconds is required for a video lesson.");
 
         var duration = lesson.DurationSeconds ?? 0;
-        var position = Math.Clamp(request.PositionSeconds.Value, 0, Math.Max(duration, request.PositionSeconds.Value));
-        var percentage = duration <= 0 ? 0 : (int)Math.Min(100, Math.Round(position * 100.0 / duration));
 
-        return (percentage, position, percentage >= _o.VideoCompletionThresholdPercent);
+        // Percentage is computed against whatever the client reported, uncapped — so a client
+        // signaling "finished" with a value at or past the real duration always reaches 100%,
+        // regardless of small float/rounding differences between the browser and the server's
+        // stored duration. What we PERSIST as the resume position is capped to the real
+        // duration, though, so a future "resume playback" never seeks past the end of the video.
+        var reported = Math.Max(0, request.PositionSeconds.Value);
+        var storedPosition = duration > 0 ? Math.Min(reported, duration) : reported;
+        var percentage = duration <= 0 ? 0 : (int)Math.Min(100, Math.Round(reported * 100.0 / duration));
+
+        return (percentage, storedPosition, percentage >= _o.VideoCompletionThresholdPercent);
     }
 
     private static (int Percentage, int? Position, bool Completed) ComputePdf(Lesson lesson, ProgressUpdateRequest request)

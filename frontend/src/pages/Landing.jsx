@@ -2,20 +2,22 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShieldCheck, FileCheck2, TrendingUp, Sparkles, ArrowRight, Play } from 'lucide-react';
 import YoutubeIcon from '../components/YoutubeIcon';
+import { useAuth } from '../context/AuthContext';
 
 const YOUTUBE_URL = 'https://www.youtube.com/@hrctechinsights'; // TODO: replace with your real channel URL
 const YOUTUBE_EMBED = 'https://www.youtube.com/embed/videoseries?list=PLNZ_OXckl0-gVKyepradjsl73RABRtvXV'; // TODO: replace with a real video/playlist embed URL
 
 const features = [
-  { icon: ShieldCheck, title: 'Protected Content', text: 'Every video and PDF is streamed through short-lived, entitlement-checked links — never a raw file.' },
-  { icon: Sparkles, title: 'HRC TECH Watermark', text: 'Your identity is burned into every video and stamped on every PDF page automatically.' },
-  { icon: TrendingUp, title: 'Real Progress Tracking', text: 'Pick up exactly where you left off, on any device, any time.' },
-  { icon: FileCheck2, title: 'Secure Quizzes', text: 'Answers are graded server-side and never exposed before you submit.' },
+  { icon: ShieldCheck, title: 'Learn at Your Pace', text: 'Access structured lessons and learn at your own pace, whenever and wherever you choose.' },
+  { icon: Sparkles, title: 'Practical Learning', text: 'Build real-world skills through practical lessons, examples, and hands-on learning' },
+  { icon: TrendingUp, title: 'Track Your Progress', text: 'Keep track of your learning journey and continue exactly where you left off.' },
+  { icon: FileCheck2, title: 'Test Your Knowledge', text: 'Strengthen your knowledge with quizzes designed to practice.' },
 ];
 
 const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } };
 
 export default function Landing() {
+  const { user } = useAuth();
   return (
     <div className="overflow-hidden">
       <section className="relative">
@@ -51,17 +53,28 @@ export default function Landing() {
             className="mt-9 flex justify-center gap-3"
           >
             <Link
-              to="/courses"
+              to={user?.role === 'Admin' ? '/admin/courses' : '/courses'}
               className="gradient-gold group flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold text-slate-950 shadow-lg shadow-amber-900/20 transition hover:-translate-y-0.5 hover:shadow-xl"
             >
-              Browse courses <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+              {user?.role === 'Admin' ? 'Manage courses' : 'Browse courses'}
+              <ArrowRight size={17} className="transition group-hover:translate-x-1" />
             </Link>
-            <Link
-              to="/register"
-              className="flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-7 py-3.5 font-semibold text-slate-200 transition hover:border-amber-700/50"
-            >
-              Create account
-            </Link>
+            {!user && (
+              <Link
+                to="/register"
+                className="flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-7 py-3.5 font-semibold text-slate-200 transition hover:border-amber-700/50"
+              >
+                Create account
+              </Link>
+            )}
+            {user?.role === 'Student' && (
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-7 py-3.5 font-semibold text-slate-200 transition hover:border-amber-700/50"
+              >
+                My Courses
+              </Link>
+            )}
           </motion.div>
         </div>
       </section>
@@ -125,15 +138,17 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="mx-auto max-w-2xl px-4 text-center">
-          <h2 className="text-2xl font-bold text-slate-100">Ready to start learning?</h2>
-          <p className="mt-2 text-slate-400">Sign up free and get instant access to every published course.</p>
-          <Link to="/register" className="mt-6 inline-block rounded-full bg-amber-400 px-7 py-3 font-semibold text-slate-950 shadow-md transition hover:bg-amber-300">
-            Get started
-          </Link>
-        </div>
-      </section>
+      {!user && (
+        <section className="py-16">
+          <div className="mx-auto max-w-2xl px-4 text-center">
+            <h2 className="text-2xl font-bold text-slate-100">Ready to start learning?</h2>
+            <p className="mt-2 text-slate-400">Sign up free and get instant access to every published course.</p>
+            <Link to="/register" className="mt-6 inline-block rounded-full bg-amber-400 px-7 py-3 font-semibold text-slate-950 shadow-md transition hover:bg-amber-300">
+              Get started
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

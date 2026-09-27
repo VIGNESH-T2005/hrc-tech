@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon, Upload, Loader2 } from 'lucide-react';
+import { Image as ImageIcon, Upload, Loader2, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 import { errorMessage } from '../../services/errors';
 import QuizEditor from '../../components/admin/QuizEditor';
@@ -35,6 +35,18 @@ export default function AdminCourseEditor() {
     load();
     pollStatus(lessonId);
   };
+
+    const removeLesson = async (lessonId, title) => {
+    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    setError('');
+    try {
+      await api.delete(`/admin/lessons/${lessonId}`);
+      load();
+    } catch (err) {
+      setError(errorMessage(err));
+    }
+  };
+
 
   const pollStatus = (lessonId) => {
     const t = setInterval(async () => {
@@ -110,9 +122,15 @@ export default function AdminCourseEditor() {
         {lessons.map((l, i) => (
           <motion.li key={l.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
             className="surface card-shadow rounded-xl p-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <span className="text-sm font-medium text-slate-200">{l.order}. {l.title} <span className="text-xs font-normal text-slate-500">({l.contentType})</span></span>
-              <StatusBadge status={l.processingStatus} />
+              <div className="flex shrink-0 items-center gap-2">
+                <StatusBadge status={l.processingStatus} />
+                <button onClick={() => removeLesson(l.id, l.title)} title="Delete lesson"
+                  className="rounded-full p-1.5 text-slate-500 transition hover:bg-red-950/40 hover:text-red-400">
+                  <Trash2 size={14} />
+                </button>
+              </div>
             </div>
             {l.processingStage && <p className="mt-1 text-xs text-amber-400">{l.processingStage}…</p>}
             {l.processingError && <p className="mt-1 text-xs text-red-400">{l.processingError}</p>}

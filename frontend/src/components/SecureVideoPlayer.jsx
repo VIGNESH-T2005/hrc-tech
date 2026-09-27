@@ -22,7 +22,10 @@ export default function SecureVideoPlayer({ lessonId, resumeAt = 0, onProgress, 
     };
     const onTimeUpdate = () => onProgress?.(Math.floor(video.currentTime));
     const onPause = () => onMilestone?.(Math.floor(video.currentTime));
-    const onEnded = () => onMilestone?.(Math.floor(video.duration || video.currentTime));
+        // Deliberately send a value at/past the real duration rather than trusting the browser's
+    // exact float duration — this guarantees "watched to the end" always reads as 100% on the
+    // server, even on short videos where a 1-second rounding gap is a large percentage.
+    const onEnded = () => onMilestone?.(Math.ceil(video.duration || video.currentTime) + 5);
     const onVisibility = () => { if (document.hidden) video.pause(); };
 
     video.addEventListener('loadedmetadata', onLoaded);
