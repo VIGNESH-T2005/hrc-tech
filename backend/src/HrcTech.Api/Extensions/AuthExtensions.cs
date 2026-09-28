@@ -30,7 +30,7 @@ public static class AuthExtensions
                     ValidIssuer = jwt.Issuer,
                     ValidateAudience = true,
                     ValidAudience = jwt.Audience,
-                    ValidateLifetime = true,
+                    ValidateLifetime = true, 
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
                     ValidAlgorithms = [SecurityAlgorithms.HmacSha256],
