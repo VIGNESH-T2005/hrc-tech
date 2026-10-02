@@ -28,9 +28,13 @@ public class AuthTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Register_DuplicateEmail_ReturnsConflict()
     {
         var email = $"dup-{Guid.NewGuid():N}@test.local";
-        await _client.PostAsJsonAsync("/api/auth/register", new { name = "A", email, password = "Password123" });
 
-        var second = await _client.PostAsJsonAsync("/api/auth/register", new { name = "B", email, password = "Password123" });
+        var first = await _client.PostAsJsonAsync("/api/auth/register",
+            new { name = "Test User", email, password = "Password123" });
+        first.StatusCode.Should().Be(HttpStatusCode.Created, "the first registration must succeed to test the duplicate case");
+
+        var second = await _client.PostAsJsonAsync("/api/auth/register",
+            new { name = "Test User Two", email, password = "Password123" });
 
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
@@ -39,7 +43,9 @@ public class AuthTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Login_WrongPassword_ReturnsUnauthorizedWithGenericMessage()
     {
         var email = $"login-{Guid.NewGuid():N}@test.local";
-        await _client.PostAsJsonAsync("/api/auth/register", new { name = "A", email, password = "Password123" });
+        var register = await _client.PostAsJsonAsync("/api/auth/register",
+            new { name = "Test User", email, password = "Password123" });
+        register.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var response = await _client.PostAsJsonAsync("/api/auth/login", new { email, password = "WrongPassword1" });
 
@@ -51,10 +57,7 @@ public class AuthTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [Fact]
     public async Task AdminOnlyEndpoint_RejectsStudentToken_With403()
     {
-        var email = $"forbidden-{Guid.NewGuid():N}@test.local";
-        await _client.PostAsJsonAsync("/api/auth/register", new { name = "A", email, password = "Password123" });
-        var login = await _client.PostAsJsonAsync("/api/auth/login", new { email, password = "Password123" });
-        var token = (await login.Content.ReadFromJsonAsync<LoginResponse>())!.AccessToken;
+        var token = await RegisterAndLoginStudentAsync();
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/api/admin/courses");
         request.Headers.Add("Authorization", $"Bearer {token}");
@@ -68,6 +71,23 @@ public class AuthTests(ApiFactory factory) : IClassFixture<ApiFactory>
     {
         var response = await _client.GetAsync("/api/admin/courses");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    private async Task<string> RegisterAndLoginStudentAsync()
+    {
+        var email = $"forbidden-{Guid.NewGuid():N}@test.local";
+
+        var register = await _client.PostAsJsonAsync("/api/auth/register",
+            new { name = "Test Student", email, password = "Password123" });
+        register.StatusCode.Should().Be(HttpStatusCode.Created, "registration must succeed before login can be tested");
+
+        var login = await _client.PostAsJsonAsync("/api/auth/login", new { email, password = "Password123" });
+        var raw = await login.Content.ReadAsStringAsync();
+        login.IsSuccessStatusCode.Should().BeTrue($"student login must succeed to run this test. Response: {raw}");
+
+        var body = await login.Content.ReadFromJsonAsync<LoginResponse>();
+        body!.AccessToken.Should().NotBeNullOrEmpty();
+        return body.AccessToken;
     }
 
     private sealed record RegisterResponse(Guid Id, string Name, string Email, string Role);

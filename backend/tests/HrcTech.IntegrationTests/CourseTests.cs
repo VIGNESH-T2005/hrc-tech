@@ -40,8 +40,13 @@ public class CourseTests(ApiFactory factory) : IClassFixture<ApiFactory>
     {
         var response = await _client.PostAsJsonAsync("/api/auth/login",
             new { email = ApiFactory.AdminEmail, password = ApiFactory.AdminPassword });
+
+        var raw = await response.Content.ReadAsStringAsync();
+        response.IsSuccessStatusCode.Should().BeTrue($"admin login must succeed to run this test. Response: {raw}");
+
         var body = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        return body!.AccessToken;
+        body!.AccessToken.Should().NotBeNullOrEmpty();
+        return body.AccessToken;
     }
 
     private async Task<Guid> CreateDraftCourseAsync(string adminToken)
@@ -58,6 +63,8 @@ public class CourseTests(ApiFactory factory) : IClassFixture<ApiFactory>
         };
         request.Headers.Add("Authorization", $"Bearer {adminToken}");
         var response = await _client.SendAsync(request);
+        response.StatusCode.Should().Be(HttpStatusCode.Created, "course creation must succeed to run this test");
+
         var body = await response.Content.ReadFromJsonAsync<CourseDto>();
         return body!.Id;
     }
