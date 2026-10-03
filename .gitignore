@@ -482,9 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-storage/
+
 .env
 node_modules/
-storage/
+
 .env
 node_modules/
