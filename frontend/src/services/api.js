@@ -21,7 +21,12 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const { config, response } = error;
-    if (response?.status === 401 && !config._retried) {
+
+    // Never retry the refresh call itself — a 401 here just means "not logged in yet",
+    // and retrying it would call /auth/refresh recursively.
+    const isRefreshCall = config?.url?.includes('/auth/refresh');
+
+    if (response?.status === 401 && !config._retried && !isRefreshCall) {
       config._retried = true;
       try {
         refreshPromise ??= api.post('/auth/refresh').finally(() => { refreshPromise = null; });

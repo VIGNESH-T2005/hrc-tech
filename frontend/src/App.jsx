@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -15,33 +17,35 @@ import QuizPage from './pages/QuizPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCourses from './pages/admin/AdminCourses';
 import AdminCourseEditor from './pages/admin/AdminCourseEditor';
-import Footer from './components/Footer';
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/courses/:id" element={<CourseDetails />} />
-          <Route path="/payment/result" element={<PaymentResult />} />
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:id" element={<CourseDetails />} />
+            <Route path="/payment/result" element={<PaymentResult />} />
 
-          <Route element={<ProtectedRoute role="Student" />}>
-            <Route path="/dashboard" element={<StudentDashboard />} />
-            <Route path="/learn/:courseId" element={<CoursePlayer />} />
-            <Route path="/learn/:courseId/quiz" element={<QuizPage />} />
-          </Route>
+            <Route element={<ProtectedRoute role="Student" />}>
+              <Route path="/dashboard" element={<StudentDashboard />} />
+              <Route path="/learn/:courseId" element={<CoursePlayer />} />
+              <Route path="/learn/:courseId/quiz" element={<QuizPage />} />
+            </Route>
 
-          <Route element={<ProtectedRoute role="Admin" />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/courses" element={<AdminCourses />} />
-            <Route path="/admin/courses/:id" element={<AdminCourseEditor />} />
-          </Route>
-        </Routes>
+            <Route element={<ProtectedRoute role="Admin" />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/courses" element={<AdminCourses />} />
+              <Route path="/admin/courses/:id" element={<AdminCourseEditor />} />
+            </Route>
+          </Routes>
+        </ErrorBoundary>
+        <Footer />
       </AuthProvider>
     </BrowserRouter>
   );
