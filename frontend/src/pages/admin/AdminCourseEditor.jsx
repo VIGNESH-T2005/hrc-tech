@@ -82,61 +82,54 @@ export default function AdminCourseEditor() {
     }
   };
 
-  if (!course) return <p className="p-8 text-center text-slate-400">Loading…</p>;
+  if (!course) return <p className="p-8 text-center text-neutral-400">Loading…</p>;
 
   return (
     <div className="relative mx-auto max-w-4xl px-4 py-12">
-      <GlowBackground variant="admin" />
-
+      <GlowBackground />
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-extrabold text-slate-100">{course.title}</h1>
+        <h1 className="text-2xl font-extrabold text-white">{course.title}</h1>
         <button onClick={togglePublish}
-          className={`rounded-full px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 ${
-            course.isPublished ? 'bg-red-950/50 text-red-400 hover:bg-red-950' : 'bg-amber-400 text-slate-950 hover:bg-amber-300'
-          }`}>
+          className={`rounded-full px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 ${course.isPublished ? 'bg-neutral-900 text-neutral-300 hover:bg-neutral-800' : 'bg-white text-black hover:bg-neutral-200'}`}>
           {course.isPublished ? 'Unpublish' : 'Publish'}
         </button>
       </motion.div>
-      {error && <p className="mb-4 rounded-lg bg-red-950/40 px-3 py-2 text-sm text-red-400">{error}</p>}
+      {error && <p className="mb-4 rounded-lg bg-neutral-900 px-3 py-2 text-sm text-neutral-300">{error}</p>}
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-        className="surface card-shadow mb-8 flex flex-col items-start gap-4 rounded-2xl p-5 transition hover:border-amber-700/40 sm:flex-row sm:items-center">
-        <div className="flex h-24 w-40 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-800">
-          {course.thumbnailUrl
-            ? <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover" />
-            : <ImageIcon size={24} className="text-slate-600" />}
+        className="surface card-shadow mb-8 flex flex-col items-start gap-4 rounded-2xl p-5 transition hover:border-white/20 sm:flex-row sm:items-center">
+        <div className="flex h-24 w-40 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral-800">
+          {course.thumbnailUrl ? <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <ImageIcon size={24} className="text-neutral-600" />}
         </div>
         <div className="flex-1">
-          <p className="text-sm font-semibold text-slate-100">Course thumbnail</p>
-          <p className="mt-0.5 text-xs text-slate-500">JPEG or PNG, shown on the course grid and details page.</p>
-          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border-subtle)] px-4 py-2 text-xs font-medium text-amber-400 transition hover:border-amber-500 hover:bg-amber-500/5">
+          <p className="text-sm font-semibold text-white">Course thumbnail</p>
+          <p className="mt-0.5 text-xs text-neutral-500">JPEG or PNG, shown on the course grid and details page.</p>
+          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full border border-neutral-700 px-4 py-2 text-xs font-medium text-neutral-300 transition hover:border-white hover:text-white">
             {thumbUploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
             {thumbUploading ? 'Uploading…' : course.thumbnailUrl ? 'Change thumbnail' : 'Upload thumbnail'}
-            <input ref={thumbInputRef} type="file" accept="image/jpeg,image/png" className="hidden"
-              onChange={e => changeThumbnail(e.target.files[0])} />
+            <input ref={thumbInputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={e => changeThumbnail(e.target.files[0])} />
           </label>
         </div>
       </motion.div>
 
-      <h2 className="mb-3 font-semibold text-slate-100">Lessons</h2>
+      <h2 className="mb-3 font-semibold text-white">Lessons</h2>
       <ul className="mb-4 space-y-2">
         {lessons.map((l, i) => (
           <motion.li key={l.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-            className="surface card-shadow rounded-xl p-4 transition hover:border-amber-700/30">
+            className="surface card-shadow rounded-xl p-4 transition hover:border-white/20">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium text-slate-200">{l.order}. {l.title} <span className="text-xs font-normal text-slate-500">({l.contentType})</span></span>
+              <span className="text-sm font-medium text-neutral-200">{l.order}. {l.title} <span className="text-xs font-normal text-neutral-500">({l.contentType})</span></span>
               <div className="flex shrink-0 items-center gap-2">
                 <StatusBadge status={l.processingStatus} />
-                <button onClick={() => removeLesson(l.id, l.title)} title="Delete lesson"
-                  className="rounded-full p-1.5 text-slate-500 transition hover:bg-red-950/40 hover:text-red-400">
+                <button onClick={() => removeLesson(l.id, l.title)} title="Delete lesson" className="rounded-full p-1.5 text-neutral-500 transition hover:bg-neutral-800 hover:text-white">
                   <Trash2 size={14} />
                 </button>
               </div>
             </div>
-            {l.processingStage && <p className="mt-1 text-xs text-amber-400">{l.processingStage}…</p>}
-            {l.processingError && <p className="mt-1 text-xs text-red-400">{l.processingError}</p>}
+            {l.processingStage && <p className="mt-1 text-xs text-neutral-400">{l.processingStage}…</p>}
+            {l.processingError && <p className="mt-1 text-xs text-neutral-400">{l.processingError}</p>}
             {(l.processingStatus === 'NoContent' || l.processingStatus === 'Failed') && (
-              <label className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-[var(--border-subtle)] px-3 py-2 text-xs font-medium text-slate-400 transition hover:border-amber-500 hover:text-amber-400">
+              <label className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-neutral-700 px-3 py-2 text-xs font-medium text-neutral-400 transition hover:border-white hover:text-white">
                 <Upload size={13} /> Choose {l.contentType === 'Video' ? 'video' : 'PDF'} file
                 <input type="file" className="hidden" onChange={e => e.target.files[0] && upload(l.id, e.target.files[0])} />
               </label>
@@ -145,17 +138,14 @@ export default function AdminCourseEditor() {
         ))}
       </ul>
 
-      <motion.form onSubmit={addLesson} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-        className="surface card-shadow mb-8 flex flex-wrap gap-2 rounded-2xl p-4">
-        <input required placeholder="Lesson title"
-          className="flex-1 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-base)] px-3.5 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500"
+      <motion.form onSubmit={addLesson} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="surface card-shadow mb-8 flex flex-wrap gap-2 rounded-2xl p-4">
+        <input required placeholder="Lesson title" className="flex-1 rounded-xl border border-neutral-700 bg-black px-3.5 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-white"
           value={newLesson.title} onChange={e => setNewLesson({ ...newLesson, title: e.target.value })} />
-        <select className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-base)] px-3 py-2 text-sm text-slate-100"
-          value={newLesson.contentType} onChange={e => setNewLesson({ ...newLesson, contentType: e.target.value })}>
+        <select className="rounded-xl border border-neutral-700 bg-black px-3 py-2 text-sm text-white" value={newLesson.contentType} onChange={e => setNewLesson({ ...newLesson, contentType: e.target.value })}>
           <option value="Video">Video</option>
           <option value="Pdf">PDF</option>
         </select>
-        <button className="rounded-xl bg-amber-400 px-5 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-amber-300">Add</button>
+        <button className="rounded-xl bg-white px-5 font-semibold text-black transition hover:-translate-y-0.5 hover:bg-neutral-200">Add</button>
       </motion.form>
 
       <QuizEditor courseId={id} />
@@ -165,11 +155,11 @@ export default function AdminCourseEditor() {
 
 function StatusBadge({ status }) {
   const colors = {
-    NoContent: 'bg-slate-800 text-slate-400',
-    Queued: 'bg-amber-950/50 text-amber-400',
-    Processing: 'bg-amber-950/50 text-amber-400',
-    Ready: 'bg-emerald-950/50 text-emerald-400',
-    Failed: 'bg-red-950/50 text-red-400',
+    NoContent: 'bg-neutral-800 text-neutral-400',
+    Queued: 'bg-neutral-800 text-neutral-300',
+    Processing: 'bg-neutral-800 text-neutral-300',
+    Ready: 'bg-white text-black',
+    Failed: 'bg-neutral-900 text-neutral-400',
   };
   return <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${colors[status] ?? ''}`}>{status}</span>;
 }

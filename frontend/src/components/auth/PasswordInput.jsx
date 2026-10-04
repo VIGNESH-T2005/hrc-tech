@@ -13,7 +13,6 @@ function scorePassword(pw) {
 }
 
 const labels = ['Too short', 'Weak', 'Okay', 'Good', 'Strong'];
-const colors = ['bg-red-500', 'bg-red-500', 'bg-amber-400', 'bg-amber-300', 'bg-emerald-400'];
 
 export default function PasswordInput({ value, onChange, showStrength = false, placeholder = '••••••••', minLength }) {
   const [visible, setVisible] = useState(false);
@@ -22,35 +21,24 @@ export default function PasswordInput({ value, onChange, showStrength = false, p
   return (
     <div>
       <div className="relative">
-        <input
-          type={visible ? 'text' : 'password'}
-          required
-          minLength={minLength}
-          placeholder={placeholder}
-          className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]/60 px-4 py-2.5 pr-11 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500 focus:ring-2 focus:ring-amber-900/30"
-          value={value}
-          onChange={onChange}
-        />
-        <button
-          type="button"
-          onClick={() => setVisible(v => !v)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-amber-400"
-          tabIndex={-1}
-        >
+        <input type={visible ? 'text' : 'password'} required minLength={minLength} placeholder={placeholder}
+          className="w-full rounded-xl border border-neutral-700 bg-[var(--bg-surface)] px-4 py-2.5 pr-11 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-white focus:ring-2 focus:ring-white/10"
+          value={value} onChange={onChange} />
+        <button type="button" onClick={() => setVisible(v => !v)} tabIndex={-1}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 transition hover:text-white">
           {visible ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
       </div>
-
       {showStrength && value.length > 0 && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-2 overflow-hidden">
           <div className="flex gap-1">
             {[0, 1, 2, 3].map(i => (
-              <div key={i} className="h-1 flex-1 overflow-hidden rounded-full bg-slate-800">
-                {i < score && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.25 }} className={`h-full origin-left ${colors[score]}`} />}
+              <div key={i} className="h-1 flex-1 overflow-hidden rounded-full bg-neutral-800">
+                {i < score && <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.25 }} className="h-full origin-left bg-white" />}
               </div>
             ))}
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">{labels[score]}</p>
+          <p className="mt-1 text-[11px] text-neutral-500">{labels[score]}</p>
         </motion.div>
       )}
     </div>

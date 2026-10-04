@@ -48,48 +48,41 @@ export default function QuizEditor({ courseId }) {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="surface card-shadow rounded-2xl p-5 transition hover:border-amber-700/30">
-      <h2 className="mb-4 font-semibold text-slate-100">Quiz</h2>
-      <input placeholder="Quiz title"
-        className="mb-3 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-base)] px-3.5 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500"
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="surface card-shadow rounded-2xl p-5 transition hover:border-white/20">
+      <h2 className="mb-4 font-semibold text-white">Quiz</h2>
+      <input placeholder="Quiz title" className="mb-3 w-full rounded-xl border border-neutral-700 bg-black px-3.5 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-white"
         value={quiz.title} onChange={e => setQuiz({ ...quiz, title: e.target.value })} />
-      <label className="mb-5 block text-sm text-slate-400">
+      <label className="mb-5 block text-sm text-neutral-400">
         Passing score (%)
-        <input type="number" min={1} max={100}
-          className="ml-2 w-20 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] px-2 py-1 text-slate-100"
+        <input type="number" min={1} max={100} className="ml-2 w-20 rounded-lg border border-neutral-700 bg-black px-2 py-1 text-white"
           value={quiz.passingScore} onChange={e => setQuiz({ ...quiz, passingScore: Number(e.target.value) })} />
       </label>
 
       {quiz.questions.map((q, qi) => (
-        <motion.div key={qi} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: qi * 0.05 }}
-          className="mb-3 rounded-xl border border-[var(--border-subtle)] p-4 transition hover:border-amber-700/30">
-          <input placeholder={`Question ${qi + 1}`}
-            className="mb-2 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] px-2.5 py-1.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500"
+        <motion.div key={qi} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: qi * 0.05 }} className="mb-3 rounded-xl border border-neutral-800 p-4 transition hover:border-white/20">
+          <input placeholder={`Question ${qi + 1}`} className="mb-2 w-full rounded-lg border border-neutral-700 bg-black px-2.5 py-1.5 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-white"
             value={q.questionText} onChange={e => updateQuestion(qi, { questionText: e.target.value })} />
           {q.options.map((o, oi) => (
             <div key={oi} className="mb-1.5 flex items-center gap-2">
-              <input type="radio" name={`correct-${qi}`} checked={o.isCorrect} onChange={() => setCorrect(qi, oi)}
-                className="accent-amber-400" />
-              <input placeholder={`Option ${oi + 1}`}
-                className="flex-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] px-2.5 py-1.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-500"
+              <input type="radio" name={`correct-${qi}`} checked={o.isCorrect} onChange={() => setCorrect(qi, oi)} className="accent-white" />
+              <input placeholder={`Option ${oi + 1}`} className="flex-1 rounded-lg border border-neutral-700 bg-black px-2.5 py-1.5 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-white"
                 value={o.optionText} onChange={e => updateOption(qi, oi, { optionText: e.target.value })} />
             </div>
           ))}
-          <button type="button" className="mt-1 flex items-center gap-1 text-xs font-medium text-amber-400 transition hover:text-amber-300"
+          <button type="button" className="mt-1 flex items-center gap-1 text-xs font-medium text-neutral-300 transition hover:text-white"
             onClick={() => updateQuestion(qi, { options: [...q.options, blankOption()] })}>
             <Plus size={12} /> Add option
           </button>
         </motion.div>
       ))}
-      <button type="button" className="mb-4 flex items-center gap-1 text-sm font-medium text-amber-400 transition hover:text-amber-300"
+      <button type="button" className="mb-4 flex items-center gap-1 text-sm font-medium text-neutral-300 transition hover:text-white"
         onClick={() => setQuiz({ ...quiz, questions: [...quiz.questions, blankQuestion()] })}>
         <Plus size={14} /> Add question
       </button>
 
-      {error && <p className="mb-3 rounded-lg bg-red-950/40 px-3 py-2 text-sm text-red-400">{error}</p>}
-      {saved && <p className="mb-3 flex items-center gap-1.5 text-sm text-emerald-400"><CheckCircle2 size={14} /> Saved.</p>}
-      <button onClick={save} disabled={saving}
-        className="flex items-center gap-2 rounded-xl bg-amber-400 px-5 py-2.5 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-amber-300 disabled:opacity-60 disabled:hover:translate-y-0">
+      {error && <p className="mb-3 rounded-lg bg-neutral-900 px-3 py-2 text-sm text-neutral-300">{error}</p>}
+      {saved && <p className="mb-3 flex items-center gap-1.5 text-sm text-white"><CheckCircle2 size={14} /> Saved.</p>}
+      <button onClick={save} disabled={saving} className="flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-semibold text-black transition hover:-translate-y-0.5 hover:bg-neutral-200 disabled:opacity-60">
         <Save size={15} /> {saving ? 'Saving…' : 'Save Quiz'}
       </button>
     </motion.div>

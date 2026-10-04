@@ -1,83 +1,26 @@
 @import "tailwindcss";
 
-
 :root {
-  --bg-base: #0a0a0f;
-  --bg-surface: #14141c;
-  --bg-surface-raised: #1b1b26;
-  --border-subtle: #2a2a38;
-  --gold: #d4af37;
-  --gold-light: #f0d371;
-  --gold-dim: #9c7f2c;
+  --bg-base: #000000;
+  --bg-surface: #0d0d0d;
+  --bg-surface-raised: #161616;
+  --border-subtle: #2e2e2e;
+  --ink: #ffffff;
+  --muted: #a3a3a3;
 }
 
-body {
-  background: var(--bg-base);
-  color: #f1ede2;
-  @apply antialiased;
-}
+body { background: #000000; color: #ffffff; }
 
-.gradient-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); }
-.gradient-gold-text { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .surface { background: var(--bg-surface); border: 1px solid var(--border-subtle); }
 .surface-raised { background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); }
-.card-shadow { box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -10px rgba(212,175,55,.08); }
+.card-shadow { box-shadow: 0 1px 2px rgba(0,0,0,.5), 0 8px 24px -8px rgba(255,255,255,.05); }
+.gradient-mono { background: #ffffff; }
+.gradient-mono-text { color: #ffffff; }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
+input[type="radio"], input[type="checkbox"] { accent-color: #ffffff; }
+
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes drift {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(20px, -30px) scale(1.08); }
-}
-
-/* ===== Monochrome override: client requested strict black & white ===== */
-:root {
-  /* Legacy brand tokens used by older components (gradient-gold, etc.) */
-  --gold: #ffffff;
-  --gold-light: #ffffff;
-  --gold-dim: #d4d4d4;
-  --brand-purple: #e5e5e5;
-  --brand-purple-light: #ffffff;
-  --brand-teal: #e5e5e5;
-  --brand-teal-light: #ffffff;
-  --brand-orange: #e5e5e5;
-
-  /* Repoint Tailwind's color tokens to a pure grayscale ramp.
-     This recolors every bg-*/text-*/border-* utility across the entire app
-     (amber, red, emerald, purple) with no need to edit individual pages. */
-  --color-amber-50: #fafafa;   --color-amber-100: #f5f5f5;  --color-amber-200: #e5e5e5;
-  --color-amber-300: #d4d4d4;  --color-amber-400: #ffffff;  --color-amber-500: #e5e5e5;
-  --color-amber-600: #a3a3a3;  --color-amber-700: #737373;  --color-amber-800: #404040;
-  --color-amber-900: #262626;  --color-amber-950: #171717;
-
-  --color-red-50: #fafafa;     --color-red-100: #f5f5f5;    --color-red-200: #e5e5e5;
-  --color-red-300: #d4d4d4;    --color-red-400: #ffffff;    --color-red-500: #e5e5e5;
-  --color-red-600: #d4d4d4;    --color-red-700: #737373;    --color-red-800: #404040;
-  --color-red-900: #262626;    --color-red-950: #171717;
-
-  --color-emerald-50: #fafafa; --color-emerald-100: #f5f5f5; --color-emerald-200: #e5e5e5;
-  --color-emerald-300: #d4d4d4; --color-emerald-400: #ffffff; --color-emerald-500: #e5e5e5;
-  --color-emerald-600: #a3a3a3; --color-emerald-700: #737373; --color-emerald-800: #404040;
-  --color-emerald-900: #262626; --color-emerald-950: #171717;
-
-  --color-purple-50: #fafafa;  --color-purple-100: #f5f5f5; --color-purple-200: #e5e5e5;
-  --color-purple-300: #d4d4d4; --color-purple-400: #ffffff; --color-purple-500: #e5e5e5;
-  --color-purple-600: #d4d4d4; --color-purple-700: #737373; --color-purple-800: #404040;
-  --color-purple-900: #262626; --color-purple-950: #171717;
-}
-
-/* Belt-and-suspenders: force the base page colors to pure black/white
-   regardless of any component-level override. */
-body {
-  background: #000000 !important;
-  color: #ffffff !important;
-}
-
-/* Quiz radio buttons use the browser's native accent-color, which doesn't
-   always inherit from the token override above. */
-input[type="radio"],
-input[type="checkbox"] {
-  accent-color: #ffffff;
 }

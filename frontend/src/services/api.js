@@ -3,7 +3,8 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api',
   withCredentials: true
-}); // cookie carries the refresh token
+});
+
 let accessToken = null;
 let onUnauthorized = () => {};
 
@@ -21,9 +22,6 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const { config, response } = error;
-
-    // Never retry the refresh call itself — a 401 here just means "not logged in yet",
-    // and retrying it would call /auth/refresh recursively.
     const isRefreshCall = config?.url?.includes('/auth/refresh');
 
     if (response?.status === 401 && !config._retried && !isRefreshCall) {

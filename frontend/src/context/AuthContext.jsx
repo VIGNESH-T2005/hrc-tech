@@ -11,8 +11,6 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     setUnauthorizedHandler(clear);
-    // Try a silent refresh on first load, since the httpOnly cookie may still be valid
-    // even though this in-memory token was wiped by a page refresh.
     api.post('/auth/refresh')
       .then(({ data }) => { setAccessToken(data.accessToken); setUser(data.user); })
       .catch(() => {})

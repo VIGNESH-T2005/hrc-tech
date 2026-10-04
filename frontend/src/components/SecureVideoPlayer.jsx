@@ -2,9 +2,6 @@ import { useEffect, useRef } from 'react';
 import { useContentAccess } from '../hooks/useContentAccess';
 import StudentWatermark from './StudentWatermark';
 
-// onProgress: called periodically while playing (parent should throttle this).
-// onMilestone: called immediately, un-throttled, on pause and on end — this is what
-// actually guarantees a lesson gets marked complete right when the student finishes it.
 export default function SecureVideoPlayer({ lessonId, resumeAt = 0, onProgress, onMilestone }) {
   const { url, error } = useContentAccess(lessonId);
   const videoRef = useRef(null);
@@ -22,9 +19,6 @@ export default function SecureVideoPlayer({ lessonId, resumeAt = 0, onProgress, 
     };
     const onTimeUpdate = () => onProgress?.(Math.floor(video.currentTime));
     const onPause = () => onMilestone?.(Math.floor(video.currentTime));
-        // Deliberately send a value at/past the real duration rather than trusting the browser's
-    // exact float duration — this guarantees "watched to the end" always reads as 100% on the
-    // server, even on short videos where a 1-second rounding gap is a large percentage.
     const onEnded = () => onMilestone?.(Math.ceil(video.duration || video.currentTime) + 5);
     const onVisibility = () => { if (document.hidden) video.pause(); };
 
@@ -42,18 +36,12 @@ export default function SecureVideoPlayer({ lessonId, resumeAt = 0, onProgress, 
     };
   }, [resumeAt, onProgress, onMilestone]);
 
-  if (error) return <p className="rounded-xl bg-red-950/40 p-4 text-sm text-red-400">{error}</p>;
-  if (!url) return <div className="aspect-video animate-pulse rounded-xl bg-slate-800" />;
+  if (error) return <p className="rounded-xl bg-neutral-900 p-4 text-sm text-neutral-300">{error}</p>;
+  if (!url) return <div className="aspect-video animate-pulse rounded-xl bg-neutral-800" />;
 
   return (
     <div className="relative overflow-hidden rounded-xl bg-black" onContextMenu={(e) => e.preventDefault()}>
-      <video
-        ref={videoRef}
-        src={url}
-        controls
-        controlsList="nodownload"
-        className="aspect-video w-full"
-      />
+      <video ref={videoRef} src={url} controls controlsList="nodownload" className="aspect-video w-full" />
       <StudentWatermark />
     </div>
   );
