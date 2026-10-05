@@ -56,7 +56,7 @@ export default function AdminCourses() {
         {courses.map((c, i) => (
           <motion.li key={c.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="flex items-center gap-4 px-4 py-3.5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-neutral-800">
-              {c.thumbnailUrl ? <img src={c.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <Layers size={18} className="text-neutral-600" />}
+                            {c.thumbnailUrl ? <img src={`${c.thumbnailUrl}?v=${encodeURIComponent(c.updatedAt)}`} alt="" className="h-full w-full object-cover" /> : <Layers size={18} className="text-neutral-600" />}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-white">{c.title}</p>

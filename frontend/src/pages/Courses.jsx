@@ -48,8 +48,8 @@ export default function Courses() {
             <Link to={user?.role === 'Admin' ? `/admin/courses/${c.id}` : `/courses/${c.id}`}
               className="surface card-shadow group block overflow-hidden rounded-2xl transition hover:-translate-y-1 hover:border-white/30">
               <div className="aspect-video overflow-hidden bg-neutral-900">
-                {c.thumbnailUrl
-                  ? <img src={c.thumbnailUrl} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                                {c.thumbnailUrl
+                  ? <img src={`${c.thumbnailUrl}?v=${encodeURIComponent(c.updatedAt ?? '')}`} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                   : <div className="flex h-full items-center justify-center text-neutral-700"><Layers size={40} strokeWidth={1.5} /></div>}
               </div>
               <div className="p-5">

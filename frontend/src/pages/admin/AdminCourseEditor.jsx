@@ -99,7 +99,9 @@ export default function AdminCourseEditor() {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
         className="surface card-shadow mb-8 flex flex-col items-start gap-4 rounded-2xl p-5 transition hover:border-white/20 sm:flex-row sm:items-center">
         <div className="flex h-24 w-40 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral-800">
-          {course.thumbnailUrl ? <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <ImageIcon size={24} className="text-neutral-600" />}
+                    {course.thumbnailUrl
+            ? <img src={`${course.thumbnailUrl}?v=${encodeURIComponent(course.updatedAt)}`} alt="" className="h-full w-full object-cover" />
+            : <ImageIcon size={24} className="text-neutral-600" />}
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-white">Course thumbnail</p>
