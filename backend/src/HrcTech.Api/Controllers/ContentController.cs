@@ -27,7 +27,7 @@ public class ContentController(IContentAccessService content) : ControllerBase
 
         Response.Headers.CacheControl = "no-store";
         Response.Headers["X-Content-Type-Options"] = "nosniff";
-        Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+        
 
         return PhysicalFile(file.PhysicalPath, file.ContentType, enableRangeProcessing: true);
     }
